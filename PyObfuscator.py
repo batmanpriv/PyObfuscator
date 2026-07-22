@@ -1,4 +1,5 @@
-# -*- coding: utf-8 -*-
+# Github: https://github.com/batmanpriv 
+# Telegram: @BatmanPriv
 
 import os
 import sys
