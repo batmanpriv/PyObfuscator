@@ -1,5 +1,4 @@
-# Github: https://github.com/batmanpriv 
-# Telegram: @BatmanPriv
+# -*- coding: utf-8 -*-
 
 import os
 import sys
@@ -18,7 +17,6 @@ import hashlib
 import subprocess
 import bz2
 import secrets
-import importlib
 from typing import Callable, Union, Any, Optional
 
 def _ensure_crypto():
@@ -171,26 +169,6 @@ class CodecEngine:
         for encoder_name in encoding_chain:
             encoded = self.encoders[encoder_name](encoded)
         return encoded[::-1]
-
-    def build_decoder_chain(self, encoding_chain: tuple) -> str:
-        reverse_chain = encoding_chain[::-1]
-        decoder_parts = []
-        
-        for decoder_name in reverse_chain:
-            if decoder_name == 'marshal':
-                decoder_parts.append(f"self.decoders['{decoder_name}']")
-            else:
-                decoder_parts.append(f"self.decoders['{decoder_name}']")
-        
-        decoder_expr = "("
-        for i, decoder in enumerate(reverse_chain):
-            if i == 0:
-                decoder_expr += f"self.decoders['{decoder}']("
-            else:
-                decoder_expr += f"self.decoders['{decoder}']("
-        decoder_expr += "__[::-1]" + ")" * len(reverse_chain)
-        
-        return f"__import__('base64').b64decode({decoder_expr})" if 'base64' in reverse_chain else decoder_expr
 
 class XOREngine:
     @staticmethod
@@ -846,12 +824,95 @@ class ObfuscatorEngine:
         loop_count = self._get_loop_count()
         encoded_data = self.codec.encode_data(source, chain)
         
+        if option == 1:
+            decoder = "self.c('marshal').loads(d[::-1])"
+        elif option == 2:
+            decoder = "self.c('zlib').decompress(d[::-1])"
+        elif option == 3:
+            decoder = "self.c('base64').b16decode(d[::-1])"
+        elif option == 4:
+            decoder = "self.c('base64').b32decode(d[::-1])"
+        elif option == 5:
+            decoder = "self.c('base64').b64decode(d[::-1])"
+        elif option == 6:
+            decoder = "self.c('lzma').decompress(d[::-1])"
+        elif option == 7:
+            decoder = "self.c('gzip').decompress(d[::-1])"
+        elif option == 8:
+            decoder = "self.c('zlib').decompress(self.c('base64').b16decode(d[::-1]))"
+        elif option == 9:
+            decoder = "self.c('zlib').decompress(self.c('base64').b32decode(d[::-1]))"
+        elif option == 10:
+            decoder = "self.c('zlib').decompress(self.c('base64').b64decode(d[::-1]))"
+        elif option == 11:
+            decoder = "self.c('gzip').decompress(self.c('base64').b16decode(d[::-1]))"
+        elif option == 12:
+            decoder = "self.c('gzip').decompress(self.c('base64').b32decode(d[::-1]))"
+        elif option == 13:
+            decoder = "self.c('gzip').decompress(self.c('base64').b64decode(d[::-1]))"
+        elif option == 14:
+            decoder = "self.c('lzma').decompress(self.c('base64').b16decode(d[::-1]))"
+        elif option == 15:
+            decoder = "self.c('lzma').decompress(self.c('base64').b32decode(d[::-1]))"
+        elif option == 16:
+            decoder = "self.c('lzma').decompress(self.c('base64').b64decode(d[::-1]))"
+        elif option == 17:
+            decoder = "self.c('marshal').loads(self.c('zlib').decompress(d[::-1]))"
+        elif option == 18:
+            decoder = "self.c('marshal').loads(self.c('gzip').decompress(d[::-1]))"
+        elif option == 19:
+            decoder = "self.c('marshal').loads(self.c('lzma').decompress(d[::-1]))"
+        elif option == 20:
+            decoder = "self.c('marshal').loads(self.c('base64').b16decode(d[::-1]))"
+        elif option == 21:
+            decoder = "self.c('marshal').loads(self.c('base64').b32decode(d[::-1]))"
+        elif option == 22:
+            decoder = "self.c('marshal').loads(self.c('base64').b64decode(d[::-1]))"
+        elif option == 23:
+            decoder = "self.c('marshal').loads(self.c('zlib').decompress(self.c('base64').b16decode(d[::-1])))"
+        elif option == 24:
+            decoder = "self.c('marshal').loads(self.c('zlib').decompress(self.c('base64').b32decode(d[::-1])))"
+        elif option == 25:
+            decoder = "self.c('marshal').loads(self.c('zlib').decompress(self.c('base64').b64decode(d[::-1])))"
+        elif option == 26:
+            decoder = "self.c('marshal').loads(self.c('lzma').decompress(self.c('base64').b16decode(d[::-1])))"
+        elif option == 27:
+            decoder = "self.c('marshal').loads(self.c('lzma').decompress(self.c('base64').b32decode(d[::-1])))"
+        elif option == 28:
+            decoder = "self.c('marshal').loads(self.c('lzma').decompress(self.c('base64').b64decode(d[::-1])))"
+        elif option == 29:
+            decoder = "self.c('marshal').loads(self.c('gzip').decompress(self.c('base64').b16decode(d[::-1])))"
+        elif option == 30:
+            decoder = "self.c('marshal').loads(self.c('gzip').decompress(self.c('base64').b32decode(d[::-1])))"
+        elif option == 31:
+            decoder = "self.c('marshal').loads(self.c('gzip').decompress(self.c('base64').b64decode(d[::-1])))"
+        elif option == 32:
+            decoder = "self.c('marshal').loads(self.c('lzma').decompress(self.c('zlib').decompress(self.c('base64').b16decode(d[::-1]))))"
+        elif option == 33:
+            decoder = "self.c('marshal').loads(self.c('lzma').decompress(self.c('zlib').decompress(self.c('base64').b32decode(d[::-1]))))"
+        elif option == 34:
+            decoder = "self.c('marshal').loads(self.c('lzma').decompress(self.c('zlib').decompress(self.c('base64').b64decode(d[::-1]))))"
+        elif option == 35:
+            decoder = "self.c('marshal').loads(self.c('gzip').decompress(self.c('zlib').decompress(self.c('base64').b16decode(d[::-1]))))"
+        elif option == 36:
+            decoder = "self.c('marshal').loads(self.c('gzip').decompress(self.c('zlib').decompress(self.c('base64').b32decode(d[::-1]))))"
+        elif option == 37:
+            decoder = "self.c('marshal').loads(self.c('gzip').decompress(self.c('zlib').decompress(self.c('base64').b64decode(d[::-1]))))"
+        elif option == 38:
+            decoder = "self.c('marshal').loads(self.c('gzip').decompress(self.c('lzma').decompress(self.c('zlib').decompress(self.c('base64').b16decode(d[::-1])))))"
+        elif option == 39:
+            decoder = "self.c('marshal').loads(self.c('gzip').decompress(self.c('lzma').decompress(self.c('zlib').decompress(self.c('base64').b32decode(d[::-1])))))"
+        elif option == 40:
+            decoder = "self.c('marshal').loads(self.c('gzip').decompress(self.c('lzma').decompress(self.c('zlib').decompress(self.c('base64').b64decode(d[::-1])))))"
+        else:
+            raise EncryptorError("Invalid encoding option")
+        
         template = f'''{self._generate_header()}
 class _:
     def __init__(self):
         self.c = __import__
     def __call__(self, d):
-        return self.c('marshal').loads(self.c('zlib').decompress(d[::-1]))
+        return {decoder}
 
 exec((_())({repr(encoded_data)}))
 '''
@@ -864,30 +925,27 @@ class _:
     def __init__(self):
         self.c = __import__
     def __call__(self, d):
-        return self.c('marshal').loads(self.c('zlib').decompress(d[::-1]))
+        return {decoder}
 
 exec((_())({repr(encoded_data)}))
 '''
-            
             f.write(template)
 
     def simple_obfuscate(self, source: str, output_path: str) -> None:
-        encoded = base64.b64encode(
-            zlib.compress(
-                lzma.compress(
-                    gzip.compress(
-                        marshal.dumps(compile(source, '<obfuscated>', 'exec'))
-                    )
-                )
-            )
-        )[::-1]
+        data = source
+        for x in range(5):
+            method = repr(base64.b64encode(zlib.compress(lzma.compress(gzip.compress(marshal.dumps(compile(data, '<obfuscated>', 'exec'))))))[::-1])
+            data = "exec(__import__('marshal').loads(__import__('gzip').decompress(__import__('lzma').decompress(__import__('zlib').decompress(__import__('base64').b64decode(%s[::-1]))))))" % method
         
-        template = f'''import marshal, gzip, lzma, zlib, base64
-exec(marshal.loads(gzip.decompress(lzma.decompress(zlib.decompress(base64.b64decode({repr(encoded)}))))))
-'''
+        z = []
+        for i in data:
+            z.append(ord(i))
+        
+        final = "_ = %s\nexec(''.join(chr(__) for __ in _))" % z
         
         with open(output_path, 'w', encoding='utf-8') as f:
-            f.write(template)
+            f.write("exec(str(chr(35)%s));" % '+chr(1)'*10000)
+            f.write(final)
         
         py_compile.compile(output_path, output_path)
 
@@ -975,7 +1033,7 @@ class Interface:
                          .        {COLOR["brown"]}     .+@@%-           
                                    {COLOR["brown"]}      .*@@%-         
                                    {COLOR["brown"]}        .+*:
-    {COLOR["green"]}PyObfuscator | Advanced Edition | Join Git & Tg: @BatmanPriv
+    {COLOR["green"]}PyObfuscator | Advanced Edition | Git & Tg: @BatmanPriv
 '''
         print(banner)
 
