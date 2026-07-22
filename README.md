@@ -114,7 +114,7 @@ These characters are visually confusing and cause decompilers to fail.
 
 ### 3. Multi-Layer Encryption Pipeline (Option 44)
 
-```mermaid
+```text
 Original Code
     ↓
 AST Transformation (Flatten + Rename + Encrypt Strings)
